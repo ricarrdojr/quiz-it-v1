@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Dancing_Script, Fraunces, Playfair_Display, DM_Sans } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { RedTrack } from "@/components/RedTrack";
 
@@ -108,6 +109,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             Inert until Speed Insights is enabled for the project in the Vercel
             dashboard, and it self-disables outside production. */}
         <SpeedInsights />
+        {/* Web Analytics for tracking page views and visitor metrics. Inert
+            until enabled for the project in the Vercel dashboard, and it
+            self-disables outside production. */}
+        <Analytics />
       </body>
     </html>
   );
