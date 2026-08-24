@@ -5,6 +5,7 @@ import { LOVE_LIFE_OPTIONS, PATTERN_OPTIONS, DESIRE_OPTIONS, IMPORTANCE_OPTIONS,
 import { goToCheckout } from '@/lib/checkout';
 import { useAssetPrefetch } from '@/hooks/useAssetPrefetch';
 import { trackFunnelEvent } from '@/lib/tracking';
+import { readSession, writeSession } from '@/lib/session';
 
 import { Step00Landing } from './steps/Step00Landing';
 import { Step01Gender } from './steps/Step01Gender';
@@ -33,6 +34,51 @@ export function QuizContainer() {
   // Spends the question steps' idle bandwidth on the media the later steps will
   // ask for. See useAssetPrefetch for the measurements behind the schedule.
   useAssetPrefetch(step);
+
+  /**
+   * Restores a session left behind when the TikTok bottom sheet was dismissed.
+   *
+   * In an effect rather than a `useState` initializer, and that is not a style
+   * choice: this page is statically prerendered, so the server render and the
+   * first client render must agree. Reading `localStorage` while seeding state
+   * would make them disagree and break hydration.
+   *
+   * The cost is one frame on step 0 before the jump. The alternative — holding
+   * the first paint until the restore runs — would delay the landing page for
+   * every first-time visitor to spare returning ones a flicker, and this funnel
+   * is served over mobile data into an in-app WebView where first paint is the
+   * expensive thing. One frame is the cheaper trade.
+   */
+  useEffect(() => {
+    const saved = readSession();
+    if (!saved) return;
+    setStep(saved.step);
+    setAnswers(saved.answers);
+    setPatterns(saved.patterns);
+    setDesires(saved.desires);
+    setImportance(saved.importance);
+  }, []);
+
+  /**
+   * Mirrors every state change into storage.
+   *
+   * Covers both cases the spec asks for at once: a step change, and an answer
+   * recorded on a step the reader has not left yet. Step 0 with untouched
+   * answers is skipped so that merely opening the funnel does not write a blob
+   * that would later be restored into the same state it already had.
+   */
+  useEffect(() => {
+    const untouched =
+      step === 0 &&
+      !answers.gender &&
+      !answers.interest &&
+      patterns.length === 0 &&
+      desires.length === 0 &&
+      importance.length === 0;
+    if (untouched) return;
+
+    writeSession({ step, answers, patterns, desires, importance });
+  }, [step, answers, patterns, desires, importance]);
 
   /**
    * The two funnel-step postbacks, both driven from `step` rather than from the
