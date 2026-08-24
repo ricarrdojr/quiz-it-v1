@@ -114,3 +114,4 @@ tools/
 
 # Cache das buscas do firecrawl.
 .firecrawl/
+.env*

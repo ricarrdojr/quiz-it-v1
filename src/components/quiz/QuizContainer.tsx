@@ -21,7 +21,7 @@ import { Step13Revelation } from './steps/Step13Revelation';
 import { Step14Email } from './steps/Step14Email';
 import { Step15Paywall } from './steps/Step15Paywall';
 import { DevStepNav } from './DevStepNav';
-import { PandaPreload } from './PandaPreload';
+import { VturbPreload } from './VturbPreload';
 
 export function QuizContainer() {
   const [step, setStep] = useState(0);
@@ -211,12 +211,12 @@ export function QuizContainer() {
     }
   };
 
-  /** Two steps of head start for the step-15 player. See PandaPreload. */
-  const PRELOAD_PANDA_FROM = 13;
+  /** Two steps of head start for the step-15 player. See VturbPreload. */
+  const PRELOAD_PLAYER_FROM = 13;
 
   return (
     <>
-      {step >= PRELOAD_PANDA_FROM && <PandaPreload />}
+      {step >= PRELOAD_PLAYER_FROM && <VturbPreload />}
       {renderStep()}
       {/* Dev-only page jumper — stripped from production builds. See DevStepNav. */}
       {process.env.NODE_ENV === 'development' && (
