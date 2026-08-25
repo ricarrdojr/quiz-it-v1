@@ -189,10 +189,11 @@ export function Step15Paywall({ name, zodiac, interest, onCheckout }: Props) {
               document and manages that handoff itself.
 
               REVEAL_AT is unchanged and still enforced by the `setTimeout`
-              above, which counts time on the page rather than time watched. Note
-              that a same-document player is reachable from JavaScript in a way
-              the iframe was not — the gate still holds, but a viewer who skips
-              ahead now watches less of the VSL before it opens. */}
+              above, and that timeout is still a page-time timeout — it does not
+              watch the player. What changed is its duration: the wait is now
+              REVEAL_AT minus whatever watch time was credited from a previous
+              visit, so a returning reader is never made to sit out the gate
+              again. */}
           <div className="pw-vsl-player-wrap">
             <vturb-smartplayer
               id="vid-6a8c3ef348dab67a9e65468a"
